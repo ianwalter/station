@@ -1,7 +1,5 @@
 FROM appjumpstart/station
 
-RUN mkdir -p /opt/station
-WORKDIR /opt/station
-COPY index.html index.html
+COPY index.html .
 
-CMD ["station"]
+CMD ["./station"]
