@@ -3,11 +3,12 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"path"
 	"path/filepath"
+
+	"github.com/unrolled/logger"
 )
 
 type Handler struct {
@@ -27,21 +28,19 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	log := logger.New()
+
 	// Determine the directory of static files to serve.
 	dir, err := filepath.Abs("./")
 	if len(os.Args) > 1 {
-		if dir, err = filepath.Abs(os.Args[1]); err != nil {
-			log.Println(fmt.Sprintf("Path not found: %s", os.Args[1]))
-			os.Exit(1)
-		}
+		dir, _ = filepath.Abs(os.Args[1])
 	}
 
 	// Read the index.html file and create the Handler instance.
 	indexPath := path.Join(dir, "index.html")
 	index, err := ioutil.ReadFile(indexPath)
 	if err != nil {
-		log.Println(fmt.Sprintf("index.html not found: %s", indexPath))
-		os.Exit(1)
+		log.Fatal(fmt.Sprintf("index.html not found: %s", indexPath))
 	}
 	handler := Handler{http.FileServer(http.Dir(dir)), index}
 
@@ -52,6 +51,6 @@ func main() {
 	}
 
 	// Start the server.
-	log.Println("Listening...")
-	http.ListenAndServe(fmt.Sprintf(":%s", port), handler)
+	log.Println(fmt.Sprintf("🌐 Station up and running on port %s", port))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), log.Handler(handler)))
 }
