@@ -9,3 +9,5 @@ RUN CGO_ENABLED=0 GOOS=linux go build .
 
 FROM scratch
 COPY --from=build /go/src/github.com/appjumpstart/station/station .
+
+CMD [ "./station" ]
