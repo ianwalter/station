@@ -14,6 +14,7 @@ import (
 type Handler struct {
 	fs    http.Handler
 	index []byte
+	log   *logger.Logger
 }
 
 func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -21,6 +22,7 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		// If the path has a file extension, use the FileServer to serve the static
 		// file.
 		h.fs.ServeHTTP(w, r)
+
 	} else {
 		// If the path doesn't have a file extension, serve the index.html file.
 		w.Write(h.index)
@@ -42,7 +44,7 @@ func main() {
 	if err != nil {
 		log.Fatal(fmt.Sprintf("index.html not found: %s", indexPath))
 	}
-	handler := Handler{http.FileServer(http.Dir(dir)), index}
+	handler := Handler{http.FileServer(http.Dir(dir)), index, log}
 
 	// Determine what port to listen on.
 	port := os.Getenv("PORT")
