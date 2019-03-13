@@ -7,6 +7,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 
 	"github.com/unrolled/logger"
 )
@@ -17,10 +18,22 @@ type Handler struct {
 	log   *logger.Logger
 }
 
+func containsDotFile(name string) bool {
+	parts := strings.Split(name, "/")
+	for _, part := range parts {
+		if strings.HasPrefix(part, ".") {
+			return true
+		}
+	}
+	return false
+}
+
 func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Server", "station/1.0.1")
 
-	if path.Ext(r.URL.Path) != "" {
+	if containsDotFile(r.URL.Path) {
+		w.WriteHeader(403)
+	} else if path.Ext(r.URL.Path) != "" {
 		// If the path has a file extension, use the FileServer to serve the static
 		// file.
 		h.fs.ServeHTTP(w, r)
