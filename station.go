@@ -44,7 +44,7 @@ func main() {
 	indexPath := path.Join(dir, "index.html")
 	index, err := ioutil.ReadFile(indexPath)
 	if err != nil {
-		log.Fatal(fmt.Sprintf("index.html not found: %s", indexPath))
+		log.Printf("index.html not found: %s", indexPath)
 	}
 	handler := Handler{http.FileServer(http.Dir(dir)), index, log}
 
