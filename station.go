@@ -18,6 +18,8 @@ type Handler struct {
 }
 
 func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Server", "station/1.0.1")
+
 	if path.Ext(r.URL.Path) != "" {
 		// If the path has a file extension, use the FileServer to serve the static
 		// file.
